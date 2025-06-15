@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WordList {
+  id          String     @id @default(cuid())
+  name        String
+  author      String
+  description String?
+  updateTime  BigInt
+  createTime  BigInt
+  settings    Json // Храним {"side": "ru"} и т.п.
+  words       WordPair[] @relation("WordListToWordPairs") // было wordPairs
+}
+
+model WordPair {
+  id         String   @id @default(cuid())
+  word1      String
+  word2      String
+  progress   String // Можно сделать enum: @default("new")
+  wordList   WordList @relation("WordListToWordPairs", fields: [wordListId], references: [id])
+  wordListId String
+}
