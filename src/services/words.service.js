@@ -24,8 +24,8 @@ export default {
   async updatedWordItem(updatedItem) {
     const data = {
       ...updatedItem,
-      updateTime: Number(updatedItem.updateTime),
-      createTime: updatedItem.createTime ? Number(updatedItem.createTime) : undefined,
+      updatedAt: Number(updatedItem.updatedAt),
+      createdAt: updatedItem.createdAt ? Number(updatedItem.createdAt) : undefined,
     };
     const res = await axios.patch(`${URL}/${updatedItem.id}`, data);
     return res.data;
@@ -44,16 +44,16 @@ export default {
 // const prisma = new PrismaClient();
 
 // // This object will contain your database operations
-// const wordListService = {
+// const moduleService = {
 //   /**
-//    * Fetches all WordLists from the database.
-//    * @returns A promise that resolves to an array of WordList objects.
+//    * Fetches all modules from the database.
+//    * @returns A promise that resolves to an array of module objects.
 //    */
-//   async getAllWordLists() {
+//   async getAllmodules() {
 //     try {
-//       const wordLists = await prisma.wordList.findMany();
-//       // console.log("All Word Lists:", wordLists); // Consider removing console.logs from services
-//       return wordLists;
+//       const modules = await prisma.module.findMany();
+//       // console.log("All Word Lists:", modules); // Consider removing console.logs from services
+//       return modules;
 //     } catch (error) {
 //       console.error("Error fetching all word lists:", error);
 //       throw error; // Re-throw the error for upstream handling
@@ -61,16 +61,16 @@ export default {
 //   },
 
 //   /**
-//    * Fetches a single WordList by its ID.
-//    * @param id The ID of the WordList to fetch.
-//    * @returns A promise that resolves to a WordList object or null if not found.
+//    * Fetches a single module by its ID.
+//    * @param id The ID of the module to fetch.
+//    * @returns A promise that resolves to a module object or null if not found.
 //    */
-//   async getWordListById(id) {
+//   async getmoduleById(id) {
 //     try {
-//       const wordList = await prisma.wordList.findUnique({
+//       const module = await prisma.module.findUnique({
 //         where: { id },
 //       });
-//       return wordList;
+//       return module;
 //     } catch (error) {
 //       console.error(`Error fetching word list with ID ${id}:`, error);
 //       throw error;
@@ -78,35 +78,35 @@ export default {
 //   },
 
 //   /**
-//    * Fetches a WordList and its associated WordPairs by WordList ID.
-//    * @param id The ID of the WordList to fetch.
-//    * @returns A promise that resolves to a WordList object with WordPairs or null.
+//    * Fetches a module and its associated Words by module ID.
+//    * @param id The ID of the module to fetch.
+//    * @returns A promise that resolves to a module object with Words or null.
 //    */
-//   async getWordListWithPairs(id) {
+//   async getmoduleWithPairs(id) {
 //     try {
-//       const wordListWithPairs = await prisma.wordList.findUnique({
+//       const moduleWithPairs = await prisma.module.findUnique({
 //         where: { id },
-//         include: { wordPairs: true }, // Eager load the related wordPairs
+//         include: { Words: true }, // Eager load the related Words
 //       });
-//       return wordListWithPairs;
+//       return moduleWithPairs;
 //     } catch (error) {
 //       console.error(`Error fetching word list with pairs for ID ${id}:`, error);
 //       throw error;
 //     }
 //   },
 
-//   // You can add more methods here for creating, updating, or deleting WordLists
+//   // You can add more methods here for creating, updating, or deleting modules
 //   // For example:
 //   /*
-//   async createWordList(data: { name: string; author: string; description?: string }) {
+//   async createModule(data: { name: string; author: string; description?: string }) {
 //     try {
-//       const newWordList = await prisma.wordList.create({
+//       const newmodule = await prisma.module.create({
 //         data: {
 //           ...data,
-//           updateTime: Date.now(),
+//           updatedAt: Date.now(),
 //         },
 //       });
-//       return newWordList;
+//       return newmodule;
 //     } catch (error) {
 //       console.error("Error creating word list:", error);
 //       throw error;
@@ -130,15 +130,15 @@ export default {
 // async function runExamples() {
 //   try {
 //     console.log("Fetching all word lists...");
-//     const allLists = await wordListService.getAllWordLists();
+//     const allLists = await moduleService.getAllmodules();
 //     console.log("Fetched All Word Lists count:", allLists.length);
 
 //     // If you have a specific ID, you can try fetching it
 //     // const specificListId = 'some_actual_id_from_your_db';
 //     // if (specificListId) {
 //     //   console.log(`\nFetching word list by ID: ${specificListId}`);
-//     //   const singleList = await wordListService.getWordListById(specificListId);
-//     //   console.log("Fetched single WordList:", singleList);
+//     //   const singleList = await moduleService.getmoduleById(specificListId);
+//     //   console.log("Fetched single module:", singleList);
 //     // }
 //   } catch (e) {
 //     console.error("An error occurred during service operations:", e);
@@ -155,4 +155,4 @@ export default {
 // // runExamples();
 
 // // If this file is meant to be imported as a module in another part of your app:
-// export default wordListService;
+// export default moduleService;

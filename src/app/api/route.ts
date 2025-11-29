@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "../../lib/db";
 
 export async function GET() {
   try {
-    const wordLists = await prisma.wordList.findMany({
+    const modules = await prisma.module.findMany({
       include: {
         words: {
           orderBy: {
@@ -11,62 +11,69 @@ export async function GET() {
           },
         },
       },
-      orderBy: { updateTime: "desc" },
+      orderBy: { updatedAt: "desc" },
     });
-    console.log(wordLists);
-    const serialized = wordLists.map((item) => ({
+
+    const serialized = modules.map((item) => ({
       ...item,
-      updateTime: Number(item.updateTime),
-      createTime: Number(item.createTime),
+      createdAt: Number(item.createdAt), // конвертируем BigInt в число
+      updatedAt: Number(item.updatedAt),
+      words: item.words.map((w) => ({
+        ...w,
+      })),
     }));
 
     return NextResponse.json(serialized);
   } catch (error) {
-    console.error("Ошибка при получении wordLists:", error);
+    console.error("Ошибка при получении modules:", error);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }
 
 // Создать новый модуль
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, author, description, settings, words } = body;
+    const { words, ...moduleData } = body;
 
-    const newList = await prisma.wordList.create({
+    // создаём модуль
+    const createdModule = await prisma.module.create({
       data: {
-        name,
-        author,
-        description,
-        updateTime: Date.now(),
-        createTime: Date.now(),
-        settings,
-        words: {
-          create: words.map((w: any) => ({
-            word1: w.word1,
-            word2: w.word2,
-            progress: w.progress || "new",
-          })),
-        },
+        ...moduleData,
       },
+    });
+
+    // создаём слова с moduleId
+    await prisma.word.createMany({
+      data: words.map((w) => ({
+        ...w,
+        moduleId: createdModule.id,
+      })),
+    });
+
+    // получаем модуль с созданными словами
+    const full = await prisma.module.findUnique({
+      where: { id: createdModule.id },
       include: {
         words: {
-          orderBy: {
-            word1: "asc",
-          },
+          orderBy: { word1: "asc" },
         },
       },
     });
 
-    const serialized = {
-      ...newList,
-      updateTime: Number(newList.updateTime),
-      createTime: Number(newList.createTime),
-    };
+    // сериализуем BigInt
+    const serialized = full
+      ? {
+          ...full,
+          createdAt: Number(full.createdAt),
+          updatedAt: Number(full.updatedAt),
+          words: full.words.map((w) => ({ ...w })),
+        }
+      : null;
 
-    return NextResponse.json(serialized, { status: 201 });
-  } catch (error) {
-    console.error("Ошибка при создании wordList:", error);
+    return NextResponse.json(serialized);
+  } catch (e) {
+    console.error("Ошибка при создании модуля:", e);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }

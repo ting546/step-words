@@ -20,8 +20,8 @@ const CreateModule = () => {
     name: "",
     author: "Вы",
     description: "",
-    updateTime: Number(Date.now()),
-    createTime: Number(Date.now()),
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
     settings: {
       side: "ru",
     },
@@ -30,7 +30,7 @@ const CreateModule = () => {
         id: uuidv4(),
         word1: "",
         word2: "",
-        progress: "studied",
+        progress: "STUDIED",
       },
     ],
   });
@@ -65,6 +65,8 @@ const CreateModule = () => {
       ...myData,
       words: translatedWords,
     };
+    console.log(newModule);
+
     setMyData(newModule);
     addNewItem(newModule);
   };
@@ -74,7 +76,7 @@ const CreateModule = () => {
       id: uuidv4(),
       word1: "",
       word2: "",
-      progress: "studied",
+      progress: "STUDIED",
     };
     setMyData((prev) => ({ ...prev, words: [...prev.words, obj] }));
   };

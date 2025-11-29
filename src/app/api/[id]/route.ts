@@ -1,63 +1,55 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "../../../lib/db"; // путь подстрой под свой
-
-export async function GET(_request: NextRequest, context: { params: { id: string } }) {
-  const id = _request.nextUrl.pathname.split("/").pop(); // или через regex
+interface Params {
+  id: string;
+}
+export async function GET(request: Request, { params }: { params: Params }) {
+  const { id } = await params;
 
   try {
-    const wordList = await prisma.wordList.findUnique({
+    const module = await prisma.module.findUnique({
       where: { id },
-      include: {
-        words: {
-          orderBy: {
-            word1: "asc",
-          },
-        },
-      },
+      include: { words: { orderBy: { word1: "asc" } } },
     });
 
-    if (!wordList) {
-      return new NextResponse("Модуль не найден", { status: 404 });
-    }
+    if (!module) return NextResponse.json({ error: "Модуль не найден" }, { status: 404 });
 
-    const serialized = {
-      ...wordList,
-      updateTime: Number(wordList.updateTime),
-      createTime: Number(wordList.createTime),
-    };
-
-    return NextResponse.json(serialized);
-  } catch (error) {
-    console.error("Ошибка при получении wordList по ID:", error);
-    return new NextResponse("Ошибка сервера", { status: 500 });
+    return NextResponse.json({
+      ...module,
+      createdAt: Number(module.createdAt),
+      updatedAt: Number(module.updatedAt),
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 });
   }
 }
 
 // Обновить модуль (PATCH)
-export async function PATCH(request: NextRequest, { params }) {
+export async function PATCH(request: Request, { params }: { params: Params }) {
   const { id: prId } = await params;
 
   try {
     const body = await request.json();
-    const { words, ...wordListData } = body;
+    const { words, ...moduleData } = body;
 
-    // Обновляем сам wordList
-    const updatedWordList = await prisma.wordList.update({
+    // Обновляем сам module
+    const updatedmodule = await prisma.module.update({
       where: { id: prId },
       data: {
-        ...wordListData,
+        ...moduleData,
       },
     });
 
     const incomingWordIds = words.map((w) => w.id).filter(Boolean);
-    const existingWords = await prisma.wordPair.findMany({
-      where: { wordListId: prId },
+    const existingWords = await prisma.word.findMany({
+      where: { moduleId: prId },
     });
 
     const existingWordIds = existingWords.map((w) => w.id);
     const wordsToDelete = existingWordIds.filter((id) => !incomingWordIds.includes(id));
 
-    await prisma.wordPair.deleteMany({
+    await prisma.word.deleteMany({
       where: { id: { in: wordsToDelete } },
     });
 
@@ -65,15 +57,15 @@ export async function PATCH(request: NextRequest, { params }) {
       const { id, ...wordData } = word;
 
       if (id) {
-        return prisma.wordPair.update({
+        return prisma.word.update({
           where: { id },
           data: wordData,
         });
       } else {
-        return prisma.wordPair.create({
+        return prisma.word.create({
           data: {
             ...wordData,
-            wordListId: prId,
+            moduleId: prId,
           },
         });
       }
@@ -81,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }) {
 
     await Promise.all(upsertPromises);
 
-    const fullUpdated = await prisma.wordList.findUnique({
+    const fullUpdated = await prisma.module.findUnique({
       where: { id: prId },
       include: {
         words: {
@@ -92,35 +84,35 @@ export async function PATCH(request: NextRequest, { params }) {
 
     const serialized = {
       ...fullUpdated,
-      updateTime: Number(fullUpdated?.updateTime),
-      createTime: Number(fullUpdated?.createTime),
+      updatedAt: Number(fullUpdated?.updatedAt),
+      createdAt: Number(fullUpdated?.createdAt),
     };
 
     return NextResponse.json(serialized);
   } catch (error) {
-    console.error("Ошибка при обновлении WordList:", error);
+    console.error("Ошибка при обновлении module:", error);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }
 
 // Удалить модуль (DELETE)
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Params }) {
   const { id } = params;
 
   try {
-    await prisma.wordPair.deleteMany({
+    await prisma.word.deleteMany({
       where: {
-        wordListId: id,
+        moduleId: id,
       },
     });
 
-    await prisma.wordList.delete({
+    await prisma.module.delete({
       where: { id },
     });
 
     return new NextResponse("Модуль удалён", { status: 200 });
   } catch (error) {
-    console.error("Ошибка при удалении wordList:", error);
+    console.error("Ошибка при удалении module:", error);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }

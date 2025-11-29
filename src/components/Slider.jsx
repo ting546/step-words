@@ -114,9 +114,9 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
         : words?.[currentIndex + 1]?.word1;
     setFli((prev) => !prev);
 
-    if (action === "learned") {
+    if (action === "LEARNED") {
       setSlideDirection("right");
-    } else if (action === "studied") {
+    } else if (action === "STUDIED") {
       setSlideDirection("left");
     }
     if (currentIndex == words.length - 1) {
@@ -183,7 +183,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
         <div className="flex justify-center items-center relative">
           <button
             onClick={() => {
-              nextCard("studied");
+              nextCard("STUDIED");
             }}
             disabled={!unlock || success}
             className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
@@ -197,7 +197,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
 
           <button
             onClick={() => {
-              nextCard("learned");
+              nextCard("LEARNED");
             }}
             disabled={!unlock || success}
             className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${

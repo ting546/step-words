@@ -2,12 +2,11 @@
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 
-const RecentModules = ({ className, data }) => {
- 
+const Recentmodules = ({ className, data }) => {
   const wordsByData = () => {
     return [...data].sort((a, b) => {
-      if (a.updateTime > b.updateTime) return -1;
-      if (a.updateTime < b.updateTime) return 1;
+      if (a.updatedAt > b.updatedAt) return -1;
+      if (a.updatedAt < b.updatedAt) return 1;
       return 0;
     });
   };
@@ -44,4 +43,4 @@ const RecentModules = ({ className, data }) => {
     </>
   );
 };
-export default RecentModules;
+export default Recentmodules;

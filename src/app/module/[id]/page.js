@@ -94,7 +94,7 @@ const Module = ({ params }) => {
   };
 
   const updateDb = async (newWords) => {
-    const updatedData = { ...data, updateTime: Date.now(), words: newWords };
+    const updatedData = { ...data, updatedAt: Date.now(), words: newWords };
     await mutateAsync(updatedData);
   };
 
@@ -114,10 +114,10 @@ const Module = ({ params }) => {
   // Пересчитываем статистику при изменении данных
 
   const getStudiedSteps = () => {
-    return data?.words?.filter((word) => word.progress === "studied").length;
+    return data?.words?.filter((word) => word.progress === "STUDIED").length;
   };
   const getLearnedSteps = () => {
-    return data?.words?.filter((word) => word.progress === "learned").length;
+    return data?.words?.filter((word) => word.progress === "LEARNED").length;
   };
 
   return (
@@ -202,7 +202,7 @@ const Module = ({ params }) => {
                       onClick={() => {
                         setIsShow(true);
                         setIsHidSlider(false);
-                        setMniArr([...data.words.filter((word) => word.progress === "studied")]);
+                        setMniArr([...data.words.filter((word) => word.progress === "STUDIED")]);
                       }}
                       className="cursor-pointer w-full justify-center flex items-center gap-2 text-md font-medium p-5 rounded-4xl hover:bg-blue-800 transition-all border border-gray-700">
                       Подучить еще ({getStudiedSteps()})
@@ -278,7 +278,7 @@ const Module = ({ params }) => {
                   words={data.words || []}
                   title="Изучено"
                   description="Вы начали изучать эти термины. Продолжайте!"
-                  progressType="studied"
+                  progressType="STUDIED"
                   onDelete={(index) => handledeleteModule(index)}
                   onChange={(val, key, index) => handleChangeWord(val, key, index)}
                 />
@@ -286,7 +286,7 @@ const Module = ({ params }) => {
                   words={data.words || []}
                   title="Усвоено"
                   description="Вы хорошо усвоили эти термины!"
-                  progressType="learned"
+                  progressType="LEARNED"
                   onDelete={(index) => handledeleteModule(index)}
                   onChange={(val, key, index) => handleChangeWord(val, key, index)}
                 />

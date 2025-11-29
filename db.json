@@ -5,8 +5,8 @@
       "name": "English words 1",
       "author": "Вы",
       "description": "",
-      "updateTime": 1749895806843,
-      "createTime": 1749240592482,
+      "updatedAt": 1749895806843,
+      "createdAt": 1749240592482,
       "settings": {
         "side": "ru"
       },
@@ -15,25 +15,25 @@
           "id": "c9de5cdd-9d89-4a4a-b0c5-97b889c5f5b5",
           "word1": "HEllo",
           "word2": "Привет",
-          "progress": "learned"
+          "progress": "LEARNED"
         },
         {
           "id": "54baca65-07c3-46ee-83bc-a917c2ecf54e",
           "word1": "Here",
           "word2": "Здесь",
-          "progress": "studied"
+          "progress": "STUDIED"
         },
         {
           "id": "0f05e96c-6047-4163-a319-e7c62920477f",
           "word1": "How",
           "word2": "Как",
-          "progress": "learned"
+          "progress": "LEARNED"
         },
         {
           "id": "151fad99-8d42-40a4-a581-af0f310fc9a2",
           "word1": "Word",
           "word2": "Слово",
-          "progress": "studied"
+          "progress": "STUDIED"
         }
       ]
     }

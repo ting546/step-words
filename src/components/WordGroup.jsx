@@ -8,7 +8,7 @@ const WordGroup = ({ words, title, description, progressType, onDelete, onChange
     <div className="mb-10">
       <h2
         className={`text-2xl mb-2 ${
-          progressType === "studied" ? "text-orange-400" : "text-green-400"
+          progressType === "STUDIED" ? "text-orange-400" : "text-green-400"
         }`}>
         {title} ({filteredWords.length})
       </h2>

@@ -11,7 +11,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import wordService from "../../../services/words.service";
 import Load from "../../../components/Load";
 import { v4 as uuidv4 } from "uuid";
-const EditModule = ({ params }) => {
+const Editmodule = ({ params }) => {
   const unwrappedParams = use(params);
   const wordId = unwrappedParams.id;
   const navigate = useRouter();
@@ -58,7 +58,6 @@ const EditModule = ({ params }) => {
   if (isError) return <h1>Данные не найдены или произошла ошибка.</h1>;
 
   const saveWords = () => {
-   
     autoSave(myData);
     navigate.push(`/module/${wordId}`);
   };
@@ -68,7 +67,7 @@ const EditModule = ({ params }) => {
       id: uuidv4(),
       word1: "",
       word2: "",
-      progress: "studied",
+      progress: "STUDIED",
     };
     setMyData((prev) => ({ ...prev, words: [...prev.words, obj] }));
   };
@@ -128,9 +127,9 @@ const EditModule = ({ params }) => {
                     const updatedData = { ...myData, words: updatedWords };
 
                     setMyData(updatedData);
-                    
+
                     if (!write) {
-                      console.log('!wtire')
+                      console.log("!wtire");
                       setTimeout(() => {
                         autoSave(updatedData);
                       }, 100);
@@ -156,4 +155,4 @@ const EditModule = ({ params }) => {
   );
 };
 
-export default EditModule;
+export default Editmodule;

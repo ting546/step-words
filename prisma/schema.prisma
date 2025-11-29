@@ -5,22 +5,21 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-ts"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model Module {
   id          String    @id @default(cuid())
   name        String
   author      String
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   BigInt @default(0)
+  updatedAt   BigInt @default(0)
   settings    Json
   words       Word[]
 }
@@ -36,7 +35,6 @@ model Word {
 
 enum Progress {
   NEW
-  STUDIED
+  STUDIED   
   LEARNED
 }
-
