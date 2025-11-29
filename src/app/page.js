@@ -1,7 +1,7 @@
 import Container from "../components/Container";
 import Title from "../components/Title";
 import { Plus } from "lucide-react";
-import Recentmodules from "../components/Recentmodules";
+import Recentmodules from "../components/RecentModules";
 import Link from "next/link";
 import prisma from "../lib/db";
 const Home = async () => {
