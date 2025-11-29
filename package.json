@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "server": "npx json-server -p 4000 db.json",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --no-engine",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

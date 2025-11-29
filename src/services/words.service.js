@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const URL = "http://localhost:3000/api";
+const URL = `${process.env.NEXT_PUBLIC_API}/api`;
 export default {
   async getWords() {
     const { data } = await axios.get(URL);
