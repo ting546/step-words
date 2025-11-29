@@ -97,7 +97,7 @@ export async function PATCH(request: Request, { params }: { params: Params }) {
 
 // Удалить модуль (DELETE)
 export async function DELETE(request: Request, { params }: { params: Params }) {
-  const { id } = params;
+  const { id } = await params;
 
   try {
     await prisma.word.deleteMany({
