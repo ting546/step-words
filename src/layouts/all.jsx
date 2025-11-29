@@ -15,7 +15,7 @@ export default function AllLayout({ children }) {
   return (
     <html lang="ru">
       <body
-        className={`transition-all duration-300 ease-in-out ${isOpenHeader ? "pl-64" : ""} ${
+        className={`transition-all duration-300 ease  ${
           geistSans.variable
         } ${geistMono.variable} antialiased`}>
         {children}

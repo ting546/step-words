@@ -68,7 +68,7 @@ const WordsItem = ({ dataWord1, dataWord2, index, deleteModule, onSendWord }) =>
           <Trash className="group-hover:text-red-700 transition-all" />
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid sm:grid-cols-2 gap-2">
         <Input
           placeholder="На английском"
           type="text"

@@ -15,7 +15,7 @@ const Header = () => {
       </button>
 
       <header
-        className={`fixed  top-0 left-0  h-full w-64 bg-gray-900 shadow-lg p-5 z-41 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed  top-0 left-0 -translate-x-full  h-full w-64 bg-gray-900 shadow-lg p-5 z-41 transform transition-transform duration-300 ease-in-out ${
           isOpenHeader ? "translate-x-0" : "-translate-x-full"
         }`}>
         <div className="mt-15">

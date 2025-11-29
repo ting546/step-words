@@ -12,9 +12,9 @@ const Home = async () => {
   });
 
   return (
-    <section className="pt-30 pb-20">
+    <section className="pt-20 sm:pt-30 pb-20">
       <Container>
-        <Title className="mb-20">Привет продолжим?</Title>
+        <Title className="mb-8 sm:mb-20">Привет продолжим?</Title>
         <RecentModules className="mb-10" data={data} />
         <Link
           className="group bg-gray-900 hover:bg-gray-800 transition-all ease-in p-6 rounded-md w-full justify-center items-center gap-2 text-xl text-center flex"

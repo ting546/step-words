@@ -74,36 +74,36 @@ const EditModule = ({ params }) => {
   };
 
   return (
-    <section className="pt-30 pb-20">
+    <section className="pt-20 sm:pt-30 pb-20">
       <Container>
-        <Title className="mb-15">Редактировать модуль</Title>
+        <Title className="mb-8 sm:mb-15">Редактировать модуль</Title>
         <div className="flex gap-5 justify-end">
           <button
             onClick={saveWords}
-            className="cursor-pointer text-xl p-3 rounded-2xl bg-green-700 mb-6 block">
+            className="cursor-pointer sm:text-xl p-3 rounded-2xl bg-green-700 mb-6 block">
             Сохранить
           </button>
           <button
             onClick={() => deleteModule(wordId)}
-            className="cursor-pointer text-xl p-3 rounded-2xl bg-red-700 mb-6 block">
+            className="cursor-pointer sm:text-xl p-3 rounded-2xl bg-red-700 mb-6 block">
             Удалить
           </button>
         </div>
         <Input
-          className="mb-10"
+          className="mb-5 sm:mb-10"
           placeholder={"Название"}
           type={"text"}
           onChange={(val) => setMyData((prev) => ({ ...prev, name: val.target.value }))}
           value={myData?.name}
         />
         <Textarea
-          className="mb-10"
+          className="mb-5 sm:mb-10"
           placeholder={"Описание"}
           type={"text"}
           onChange={(val) => setMyData((prev) => ({ ...prev, description: val.target.value }))}
           value={myData?.description}
         />
-        <div className="mb-10">
+        <div className="mb-5 sm:mb-10">
           {myData?.words.map((word, index) => {
             const isDeleting = deletingIndexes.includes(index);
             return (

@@ -20,7 +20,7 @@ const RecentModules = ({ className, data }) => {
             Все модули
           </Link>
         </div>
-        <div className="grid grid-cols-2">
+        <div className="grid md:grid-cols-2">
           {wordsByData()
             .slice(0, 4)
             .map((word) => (

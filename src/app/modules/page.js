@@ -3,15 +3,15 @@ import Container from "../../components/Container";
 import Title from "../../components/Title";
 import { Search, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import wordService from "../../services/words.service";
 import Link from "next/link";
 import { useState } from "react";
 import Dateitem from "../../components/DateItem";
 import Load from "../../components/Load";
+import wordsService from "../../services/words.service";
 const Modules = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["words"],
-    queryFn: wordService.getWords,
+    queryFn: wordsService.getWords,
   });
   const [searchText, setSearchText] = useState("");
 
@@ -30,25 +30,28 @@ const Modules = () => {
     };
 
     const now = Date.now();
-    return data.filter((item) => {
+    console.log(data);
+    console.log(isLoading);
+
+    return data?.filter((item) => {
       const diff = now - item.updateTime;
       const value = Math.floor(diff / unitMap[unit]);
       return value >= min && value < max;
     });
   };
 
-  const sortItemsBySecond = () => filterByTimeRange(1, 60, "seconds");
-  const sortItemsByMinutes = () => filterByTimeRange(1, 30, "minutes");
-  const sortItemsByHalfHour = () => filterByTimeRange(30, 60, "minutes");
-  const sortItemsByHour = () => filterByTimeRange(1, 3, "hours");
-  const sortItemsByToday = () => filterByTimeRange(3, 24, "hours");
-  const sortItemsByWeek = () => filterByTimeRange(24, 168, "hours");
-  const sortItemsByMonth = () => filterByTimeRange(168, 720, "hours");
-  const sortItemsByOld = () => filterByTimeRange(720, Infinity, "hours");
+  const sortItemsBySecond = () => filterByTimeRange(1, 60, "seconds") || [];
+  const sortItemsByMinutes = () => filterByTimeRange(1, 30, "minutes") || [];
+  const sortItemsByHalfHour = () => filterByTimeRange(30, 60, "minutes") || [];
+  const sortItemsByHour = () => filterByTimeRange(1, 3, "hours") || [];
+  const sortItemsByToday = () => filterByTimeRange(3, 24, "hours") || [];
+  const sortItemsByWeek = () => filterByTimeRange(24, 168, "hours") || [];
+  const sortItemsByMonth = () => filterByTimeRange(168, 720, "hours") || [];
+  const sortItemsByOld = () => filterByTimeRange(720, Infinity, "hours") || [];
   return (
     <section className="pt-30 pb-20">
       <Container>
-        <Title className="mb-14">Ваши модули</Title>
+        <Title className="mb-6 sm:mb-14">Ваши модули</Title>
         <div className="relative mb-7">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 z-30 text-gray-400"

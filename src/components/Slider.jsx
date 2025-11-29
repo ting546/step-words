@@ -4,14 +4,26 @@ import FlipCard from "./FlipCard";
 import Speach from "../utils/speach";
 
 import { useState, useEffect } from "react";
-const Slider = ({ words, data, updateDb, endSlide }) => {
+const Slider = ({ words, data, updateDb, endSlide, success }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [unlock, setUnlock] = useState(true);
   const [fli, setFli] = useState(false);
   const [animating, setAnimating] = useState(false);
 
   const [slideDirection, setSlideDirection] = useState("");
+  useEffect(() => {
+    if (success === false) {
+      // Сразу блокируем клики
+      setUnlock(false);
 
+      // Через 1 секунду разрешаем снова нажимать
+      const timer = setTimeout(() => {
+        setUnlock(true);
+      }, 200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
   useEffect(() => {
     const lang = data?.settings.side == "ru" ? "ru-RU" : "en-US";
     const speachWord =
@@ -101,7 +113,7 @@ const Slider = ({ words, data, updateDb, endSlide }) => {
         ? words?.[currentIndex + 1]?.word2
         : words?.[currentIndex + 1]?.word1;
     setFli((prev) => !prev);
-    
+
     if (action === "learned") {
       setSlideDirection("right");
     } else if (action === "studied") {
@@ -122,6 +134,7 @@ const Slider = ({ words, data, updateDb, endSlide }) => {
       setAnimating(false);
     }, 300);
     const currentWord = words[currentIndex];
+
     if (action === currentWord.progress) return;
     const updatedWord = { ...currentWord, progress: action };
     const newWords = data.words.map((word) => (word.id === currentWord.id ? updatedWord : word));
@@ -130,7 +143,7 @@ const Slider = ({ words, data, updateDb, endSlide }) => {
   };
   return (
     <>
-      <div className="relative w-full h-105">
+      <div className="relative w-full h-75 sm:h-105">
         <div
           className={`absolute z-100 text-1xl text-red-500 font-bold transition-all duration-300 ${
             slideDirection === "left"
@@ -166,12 +179,16 @@ const Slider = ({ words, data, updateDb, endSlide }) => {
           }}
         />
       </div>
-      <div className="flex mb-5 justify-center items-center gap-20 relative">
-        <div className="flex justify-center items-center">
+      <div className="flex mb-5 sm:justify-center items-center gap-20 relative">
+        <div className="flex justify-center items-center relative">
           <button
-            onClick={() => nextCard("studied")}
-            disabled={animating}
-            className="cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7">
+            onClick={() => {
+              nextCard("studied");
+            }}
+            disabled={!unlock || success}
+            className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
+              animating ? "pointer-events-none" : ""
+            }`}>
             <X color="red" size={40} />
           </button>
           <p className="font-medium mx-3">
@@ -179,9 +196,13 @@ const Slider = ({ words, data, updateDb, endSlide }) => {
           </p>
 
           <button
-            onClick={() => nextCard("learned")}
-            disabled={animating}
-            className="cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-7 pb-3 pl-7">
+            onClick={() => {
+              nextCard("learned");
+            }}
+            disabled={!unlock || success}
+            className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
+              animating ? "pointer-events-none" : ""
+            }`}>
             <Check color="lime" size={40} />
           </button>
         </div>

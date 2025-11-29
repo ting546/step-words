@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import prisma from "../../../lib/db"; // путь подстрой под свой
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
+export async function GET(_request: NextRequest, context: { params: { id: string } }) {
+  const id = _request.nextUrl.pathname.split("/").pop(); // или через regex
 
   try {
     const wordList = await prisma.wordList.findUnique({
@@ -34,62 +34,58 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 }
 
 // Обновить модуль (PATCH)
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }) {
+  const { id: prId } = await params;
+
   try {
     const body = await request.json();
-    const { id, words, ...wordListData } = body;
+    const { words, ...wordListData } = body;
 
-    // Обновляем сам WordList
+    // Обновляем сам wordList
     const updatedWordList = await prisma.wordList.update({
-      where: { id: params.id },
+      where: { id: prId },
       data: {
         ...wordListData,
       },
     });
 
-    // Собираем текущие id слов с клиента
-    const incomingWordIds = words.map((word: any) => word.id).filter(Boolean);
-
-    // Получаем текущие слова в БД для сравнения
+    const incomingWordIds = words.map((w) => w.id).filter(Boolean);
     const existingWords = await prisma.wordPair.findMany({
-      where: { wordListId: params.id },
+      where: { wordListId: prId },
     });
 
     const existingWordIds = existingWords.map((w) => w.id);
-
-    // Удаляем слова, которых больше нет в списке
     const wordsToDelete = existingWordIds.filter((id) => !incomingWordIds.includes(id));
 
     await prisma.wordPair.deleteMany({
-      where: {
-        id: { in: wordsToDelete },
-      },
+      where: { id: { in: wordsToDelete } },
     });
 
-    // Обновляем или создаем слова
-    const upsertPromises = words.map((word: any) => {
+    const upsertPromises = words.map((word) => {
       const { id, ...wordData } = word;
-      return prisma.wordPair.upsert({
-        where: { id: id || "___invalid" }, // если id нет — создаём
-        update: wordData,
-        create: {
-          ...wordData,
-          wordListId: params.id,
-        },
-      });
+
+      if (id) {
+        return prisma.wordPair.update({
+          where: { id },
+          data: wordData,
+        });
+      } else {
+        return prisma.wordPair.create({
+          data: {
+            ...wordData,
+            wordListId: prId,
+          },
+        });
+      }
     });
 
     await Promise.all(upsertPromises);
 
-    // Загружаем обновленный WordList вместе с новыми словами
     const fullUpdated = await prisma.wordList.findUnique({
-      where: { id: params.id },
+      where: { id: prId },
       include: {
         words: {
-          orderBy: [
-            { word1: "asc" },
-            { id: "asc" }, // добавляем для полной стабильности
-          ],
+          orderBy: [{ word1: "asc" }, { id: "asc" }],
         },
       },
     });
@@ -102,7 +98,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     return NextResponse.json(serialized);
   } catch (error) {
-    console.error("Ошибка при обновлении WordList с words[]:", error);
+    console.error("Ошибка при обновлении WordList:", error);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }
@@ -112,6 +108,12 @@ export async function DELETE(_request: Request, { params }: { params: { id: stri
   const { id } = params;
 
   try {
+    await prisma.wordPair.deleteMany({
+      where: {
+        wordListId: id,
+      },
+    });
+
     await prisma.wordList.delete({
       where: { id },
     });

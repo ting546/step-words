@@ -5,9 +5,8 @@ import Header from "../components/Header";
 import QueryProvider from "../components/QueryProvider";
 import AllLayout from "../layouts/all";
 import { Toaster } from "react-hot-toast";
-
+import PageTracker from "../components/PageTracker";
 const RootLayout = async ({ children }) => {
- 
   return (
     <AppProvider>
       <AllLayout>
@@ -15,6 +14,7 @@ const RootLayout = async ({ children }) => {
           <Header />
           <NextTopLoader />
           <Toaster position="right-top" gutter={4} />
+          <PageTracker />
           <main>{children}</main>
           <footer></footer>
         </QueryProvider>

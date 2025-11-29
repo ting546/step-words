@@ -66,7 +66,7 @@ const FlipCard = ({ word1, word2, side, style, fli }) => {
                 <Volume2 size={20} />
               </button>
               <div className="relative z-10 text-center">
-                <p className="text-3xl font-bold text-white mb-2">{word1}</p>
+                <p className="text-2xl sm:text-3xl  font-bold text-white mb-2">{word1}</p>
               </div>
             </div>
           </div>
@@ -96,7 +96,7 @@ const FlipCard = ({ word1, word2, side, style, fli }) => {
                 <Volume2 size={20} />
               </button>
               <div className="relative z-10 text-center">
-                <p className="text-3xl font-bold text-white mb-2">{word2}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-white mb-2">{word2}</p>
               </div>
             </div>
           </div>

@@ -42,9 +42,9 @@ const CreateModule = () => {
   const { mutate: addNewItem } = useMutation({
     mutationFn: (newItem) => wordService.createModule(newItem),
 
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["words-item"] });
-      router.push(`/module/${myData.id}`);
+      router.push(`/module/${data.id}`);
       toast.success("Модуль создан");
     },
     onError: (error) => {
@@ -96,29 +96,29 @@ const CreateModule = () => {
   };
 
   return (
-    <section className="pt-30 pb-20">
+    <section className="pt-20 sm:pt-30 pb-20">
       <Container>
-        <Title className="mb-15">Создать модуль</Title>
+        <Title className="mb-8 sm:mb-15">Создать модуль</Title>
         <button
           onClick={saveWords}
-          className="cursor-pointer text-xl p-3 rounded-2xl bg-green-700 mb-6 ml-auto block">
+          className="cursor-pointer  sm:text-xl p-3 rounded-2xl bg-green-700 mb-6 ml-auto block">
           Создать
         </button>
         <Input
-          className="mb-10"
+          className="mb-5 sm:mb-10"
           placeholder={"Название"}
           type={"text"}
           onChange={(val) => setMyData((prev) => ({ ...prev, name: val.target.value }))}
           value={myData?.name}
         />
         <Textarea
-          className="mb-10"
+          className="mb-5 sm:mb-10"
           placeholder={"Описание"}
           type={"text"}
           onChange={(val) => setMyData((prev) => ({ ...prev, description: val.target.value }))}
           value={myData?.description}
         />
-        <div className="mb-10">
+        <div className="mb-5 sm:mb-10">
           {myData?.words.map((word, index) => {
             const isDeleting = deletingIndexes.includes(index);
             return (
