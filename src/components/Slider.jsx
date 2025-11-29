@@ -187,7 +187,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
             }}
             disabled={!unlock || success}
             className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
-              animating ? "pointer-events-none" : ""
+              !unlock || success ? "pointer-events-none" : ""
             }`}>
             <X color="red" size={40} />
           </button>
@@ -201,7 +201,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
             }}
             disabled={!unlock || success}
             className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
-              animating ? "pointer-events-none" : ""
+              !unlock || success ? "pointer-events-none" : ""
             }`}>
             <Check color="lime" size={40} />
           </button>
