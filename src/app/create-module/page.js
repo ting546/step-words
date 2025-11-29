@@ -34,7 +34,7 @@ const CreateModule = () => {
       },
     ],
   });
-  const useTranslateApi = async (value) => {
+  const translateApi = async (value) => {
     const translated = await wordService.getTranslate(value);
     return translated[0][0];
   };
@@ -56,7 +56,7 @@ const CreateModule = () => {
   const saveWords = async () => {
     const translatedWords = await Promise.all(
       myData.words.map(async (word) => {
-        const translated = await useTranslateApi(word.word1);
+        const translated = await translateApi(word.word1);
         return { ...word, word2: translated };
       })
     );

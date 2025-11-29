@@ -1,118 +1,90 @@
 import { NextResponse, NextRequest } from "next/server";
-import prisma from "../../../lib/db"; // путь подстрой под свой
-interface Params {
-  id: string;
-}
-export async function GET(request: Request, { params }: { params: Params }) {
-  const { id } = await params;
+import prisma from "../../../lib/db";
+
+// Получить модуль по ID
+export async function GET(request: NextRequest) {
+  const id = request.nextUrl.pathname.split("/").pop();
+  if (!id) return new NextResponse("ID не указан", { status: 400 });
 
   try {
-    const module = await prisma.module.findUnique({
+    const foundModule  = await prisma.module.findUnique({
       where: { id },
       include: { words: { orderBy: { word1: "asc" } } },
     });
 
-    if (!module) return NextResponse.json({ error: "Модуль не найден" }, { status: 404 });
+    if (!foundModule ) return new NextResponse("Модуль не найден", { status: 404 });
 
     return NextResponse.json({
-      ...module,
-      createdAt: Number(module.createdAt),
-      updatedAt: Number(module.updatedAt),
+      ...foundModule ,
+      createdAt: Number(foundModule .createdAt),
+      updatedAt: Number(foundModule .updatedAt),
     });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Ошибка сервера" }, { status: 500 });
+  } catch (e) {
+    console.error(e);
+    return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }
 
-// Обновить модуль (PATCH)
-export async function PATCH(request: Request, { params }: { params: Params }) {
-  const { id: prId } = await params;
+// Обновить модуль
+export async function PATCH(request: NextRequest) {
+  const id = request.nextUrl.pathname.split("/").pop();
+  if (!id) return new NextResponse("ID не указан", { status: 400 });
 
   try {
     const body = await request.json();
     const { words, ...moduleData } = body;
 
-    // Обновляем сам module
-    const updatedmodule = await prisma.module.update({
-      where: { id: prId },
-      data: {
-        ...moduleData,
-      },
+    await prisma.module.update({
+      where: { id },
+      data: moduleData,
     });
 
-    const incomingWordIds = words.map((w) => w.id).filter(Boolean);
-    const existingWords = await prisma.word.findMany({
-      where: { moduleId: prId },
+    const incomingWordIds = words.map((w: any) => w.id).filter(Boolean);
+    const existingWords = await prisma.word.findMany({ where: { moduleId: id } });
+    const wordsToDelete = existingWords
+      .map((w) => w.id)
+      .filter((wId) => !incomingWordIds.includes(wId));
+
+    await prisma.word.deleteMany({ where: { id: { in: wordsToDelete } } });
+
+    await Promise.all(
+      words.map((word: any) => {
+        if (word.id) {
+          return prisma.word.update({ where: { id: word.id }, data: word });
+        } else {
+          return prisma.word.create({ data: { ...word, moduleId: id } });
+        }
+      })
+    );
+
+    const updatedModule = await prisma.module.findUnique({
+      where: { id },
+      include: { words: { orderBy: [{ word1: "asc" }, { id: "asc" }] } },
     });
 
-    const existingWordIds = existingWords.map((w) => w.id);
-    const wordsToDelete = existingWordIds.filter((id) => !incomingWordIds.includes(id));
-
-    await prisma.word.deleteMany({
-      where: { id: { in: wordsToDelete } },
+    return NextResponse.json({
+      ...updatedModule,
+      createdAt: Number(updatedModule?.createdAt),
+      updatedAt: Number(updatedModule?.updatedAt),
     });
-
-    const upsertPromises = words.map((word) => {
-      const { id, ...wordData } = word;
-
-      if (id) {
-        return prisma.word.update({
-          where: { id },
-          data: wordData,
-        });
-      } else {
-        return prisma.word.create({
-          data: {
-            ...wordData,
-            moduleId: prId,
-          },
-        });
-      }
-    });
-
-    await Promise.all(upsertPromises);
-
-    const fullUpdated = await prisma.module.findUnique({
-      where: { id: prId },
-      include: {
-        words: {
-          orderBy: [{ word1: "asc" }, { id: "asc" }],
-        },
-      },
-    });
-
-    const serialized = {
-      ...fullUpdated,
-      updatedAt: Number(fullUpdated?.updatedAt),
-      createdAt: Number(fullUpdated?.createdAt),
-    };
-
-    return NextResponse.json(serialized);
-  } catch (error) {
-    console.error("Ошибка при обновлении module:", error);
+  } catch (e) {
+    console.error(e);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }
 
-// Удалить модуль (DELETE)
-export async function DELETE(request: Request, { params }: { params: Params }) {
-  const { id } = await params;
+// Удалить модуль
+export async function DELETE(request: NextRequest) {
+  const id = request.nextUrl.pathname.split("/").pop();
+  if (!id) return new NextResponse("ID не указан", { status: 400 });
 
   try {
-    await prisma.word.deleteMany({
-      where: {
-        moduleId: id,
-      },
-    });
-
-    await prisma.module.delete({
-      where: { id },
-    });
+    await prisma.word.deleteMany({ where: { moduleId: id } });
+    await prisma.module.delete({ where: { id } });
 
     return new NextResponse("Модуль удалён", { status: 200 });
-  } catch (error) {
-    console.error("Ошибка при удалении module:", error);
+  } catch (e) {
+    console.error(e);
     return new NextResponse("Ошибка сервера", { status: 500 });
   }
 }

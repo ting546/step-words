@@ -18,7 +18,7 @@ const WordsItem = ({ dataWord1, dataWord2, index, deleteModule, onSendWord }) =>
     });
   }, [dataWord1, dataWord2]);
 
-  const useTranslateApi = async (value) => {
+  const translateApi = async (value) => {
     const translated = await wordsService.getTranslate(value);
     return translated[0][0];
   };
@@ -31,7 +31,7 @@ const WordsItem = ({ dataWord1, dataWord2, index, deleteModule, onSendWord }) =>
   };
 
   const handleBlur1 = async (e) => {
-    const translatedText = await useTranslateApi(e.target.value);
+    const translatedText = await translateApi(e.target.value);
     const updated = { ...words, word2: translatedText };
     setWords(updated);
     onSendWord(updated);
@@ -39,7 +39,7 @@ const WordsItem = ({ dataWord1, dataWord2, index, deleteModule, onSendWord }) =>
 
   const handleKey1 = async (e) => {
     if (e.key === "Enter") {
-      const translatedText = await useTranslateApi(e.target.value);
+      const translatedText = await translateApi(e.target.value);
       const updated = { ...words, word2: translatedText };
       setWords(updated);
       onSendWord(updated);
