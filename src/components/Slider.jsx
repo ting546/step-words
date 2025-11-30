@@ -134,11 +134,11 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
       setAnimating(false);
     }, 300);
     const currentWord = words[currentIndex];
-
+    console.log(currentIndex, action);
     if (action === currentWord.progress) return;
     const updatedWord = { ...currentWord, progress: action };
     const newWords = data.words.map((word) => (word.id === currentWord.id ? updatedWord : word));
-   
+    console.log(newWords);
     updateDb(newWords);
   };
   return (

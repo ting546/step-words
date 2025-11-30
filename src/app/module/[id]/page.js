@@ -2,7 +2,7 @@
 import { notFound } from "next/navigation";
 import Container from "../../../components/Container";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { RefreshCcw } from "lucide-react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -26,6 +26,7 @@ const Module = ({ params }) => {
     queryKey: ["words-item", wordId],
     queryFn: () => wordsService.getWordsById(wordId),
   });
+
 
   const [mniArr, setMniArr] = useState([]);
   const [isHidSlider, setIsHidSlider] = useState(false);
@@ -269,7 +270,7 @@ const Module = ({ params }) => {
                   success={isPending}
                   words={mniArr}
                   updateDb={updateDb}
-                  data={data}
+                  data={localData}
                   endSlide={() => {
                     setIsHidSlider(true);
                     setIsShow(false);
@@ -281,7 +282,7 @@ const Module = ({ params }) => {
                   success={isPending}
                   words={localData?.words}
                   updateDb={updateDb}
-                  data={data}
+                  data={localData}
                   endSlide={() => {
                     setIsHidSlider((prev) => !prev);
                   }}
