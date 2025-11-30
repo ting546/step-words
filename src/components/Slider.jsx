@@ -138,7 +138,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
     if (action === currentWord.progress) return;
     const updatedWord = { ...currentWord, progress: action };
     const newWords = data.words.map((word) => (word.id === currentWord.id ? updatedWord : word));
-
+   
     updateDb(newWords);
   };
   return (
@@ -152,7 +152,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
           }`}>
           Не знаю
         </div>
-        {words.map((word, index) => (
+        {words?.map((word, index) => (
           <FlipCard
             key={word.id}
             style={getWordstyle(index)}
@@ -175,7 +175,7 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
         <div
           className="h-full bg-gradient-to-r from-green-600 to-green-700 rounded-full transition-all duration-200 ease-out"
           style={{
-            width: `${((currentIndex + 1) / words.length) * 100}%`,
+            width: `${((currentIndex + 1) / words?.length) * 100}%`,
           }}
         />
       </div>
@@ -185,23 +185,23 @@ const Slider = ({ words, data, updateDb, endSlide, success }) => {
             onClick={() => {
               nextCard("STUDIED");
             }}
-            disabled={!unlock || success}
+            disabled={success}
             className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
-              !unlock || success ? "pointer-events-none" : ""
+              success ? "pointer-events-none" : ""
             }`}>
             <X color="red" size={40} />
           </button>
           <p className="font-medium mx-3">
-            {currentIndex + 1} / {words.length}
+            {currentIndex + 1} / {words?.length}
           </p>
 
           <button
             onClick={() => {
               nextCard("LEARNED");
             }}
-            disabled={!unlock || success}
+            disabled={success}
             className={`cursor-pointer z-100 rounded-4xl border hover:bg-gray-700 transition-all border-gray-700 pt-3 pr-6 pb-3 pl-7 ${
-              !unlock || success ? "pointer-events-none" : ""
+              success ? "pointer-events-none" : ""
             }`}>
             <Check color="lime" size={40} />
           </button>

@@ -16,6 +16,7 @@ import Slider from "../../../components/Slider";
 import Select from "../../../Ui/Select";
 import wordsService from "../../../services/words.service";
 import Load from "../../../components/Load";
+
 const Module = ({ params }) => {
   const pr = use(params);
   const wordId = pr.id;
@@ -30,6 +31,7 @@ const Module = ({ params }) => {
   const [isHidSlider, setIsHidSlider] = useState(false);
   const [isShow, setIsShow] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [localData, setLocalData] = useState(null);
   const { mutate: deleteModule } = useMutation({
     mutationFn: (wordId) => wordsService.deleteModule(wordId),
     onSuccess: () => {
@@ -58,6 +60,9 @@ const Module = ({ params }) => {
       console.error("Ошибка при обновлении:", error);
     },
   });
+  useEffect(() => {
+    if (data) setLocalData(data);
+  }, [data]);
   useEffect(() => {
     if (isHidSlider && !isPending) {
       const timer = setTimeout(() => {
@@ -94,8 +99,16 @@ const Module = ({ params }) => {
   };
 
   const updateDb = async (newWords) => {
-    const updatedData = { ...data, updatedAt: Date.now(), words: newWords };
-    await mutateAsync(updatedData);
+    setLocalData((prev) => {
+      const updated = {
+        ...prev,
+        words: newWords,
+        updatedAt: Date.now(),
+      };
+
+      mutateAsync(updated); // отправка в Prisma
+      return updated; // обновляем локальное состояние
+    });
   };
 
   const handleSettingsChange = (e) => {
@@ -124,6 +137,7 @@ const Module = ({ params }) => {
     <section className="pt-20 sm:pt-30 pb-10">
       {isPending && isHidSlider && <Load />}
       {myIsError && <h1>Error</h1>}
+
       <Container>
         <div className="max-w-200 m-auto">
           {showResult && (
@@ -144,7 +158,7 @@ const Module = ({ params }) => {
                       <div className="w-35">
                         <ProgressProvider
                           valueStart={0}
-                          valueEnd={(getLearnedSteps() / data?.words?.length) * 100}>
+                          valueEnd={(getLearnedSteps() / localData?.words?.length) * 100}>
                           {(value) => (
                             <CircularProgressbar
                               className="font-medium"
@@ -182,7 +196,7 @@ const Module = ({ params }) => {
                       </li>
                       <li className="relative rounded-4xl text-sm sm:text-base mb-3 flex justify-between gap-2 pt-2 pr-4 pb-2 pl-4 bg-gray-400/20">
                         <span className="text-gray-300 font-bold">Всего терминов</span>
-                        <span>{data?.words?.length}</span>
+                        <span>{localData?.words?.length}</span>
                       </li>
                     </ul>
                   </div>
@@ -202,7 +216,9 @@ const Module = ({ params }) => {
                       onClick={() => {
                         setIsShow(true);
                         setIsHidSlider(false);
-                        setMniArr([...data.words.filter((word) => word.progress === "STUDIED")]);
+                        setMniArr([
+                          ...localData?.words.filter((word) => word.progress === "STUDIED"),
+                        ]);
                       }}
                       className="cursor-pointer w-full justify-center flex items-center gap-2 text-md font-medium p-5 rounded-4xl hover:bg-blue-800 transition-all border border-gray-700">
                       Подучить еще ({getStudiedSteps()})
@@ -223,13 +239,15 @@ const Module = ({ params }) => {
             <>
               <div className="flex mb-10 justify-between items-center gap-4 flex-wrap">
                 <div>
-                  <h1 className="text-left text-2xl sm:text-3xl mb-2 font-bold">{data.name}</h1>
-                  {data.description && <p>{data.description}</p>}
+                  <h1 className="text-left text-2xl sm:text-3xl mb-2 font-bold">
+                    {localData?.name}
+                  </h1>
+                  {localData?.description && <p>{localData?.description}</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   <p>Сторона:</p>
                   <Select
-                    selectedVal={data.settings.side}
+                    selectedVal={localData?.settings.side}
                     options={[
                       { val: "en", text: "Английский" },
                       { val: "ru", text: "Русский" },
@@ -261,7 +279,7 @@ const Module = ({ params }) => {
               {!isShow && (
                 <Slider
                   success={isPending}
-                  words={data.words}
+                  words={localData?.words}
                   updateDb={updateDb}
                   data={data}
                   endSlide={() => {
@@ -271,11 +289,11 @@ const Module = ({ params }) => {
               )}
 
               <h2 className="mb-5 text-2xl font-medium">
-                Термины в модуле ({data?.words?.length})
+                Термины в модуле ({localData?.words?.length})
               </h2>
               <div className={isPending ? "opacity-50" : ""}>
                 <WordGroup
-                  words={data.words || []}
+                  words={localData?.words || []}
                   title="Изучено"
                   description="Вы начали изучать эти термины. Продолжайте!"
                   progressType="STUDIED"
@@ -283,7 +301,7 @@ const Module = ({ params }) => {
                   onChange={(val, key, index) => handleChangeWord(val, key, index)}
                 />
                 <WordGroup
-                  words={data.words || []}
+                  words={localData?.words || []}
                   title="Усвоено"
                   description="Вы хорошо усвоили эти термины!"
                   progressType="LEARNED"
@@ -293,7 +311,7 @@ const Module = ({ params }) => {
               </div>
               <Link
                 className="cursor-pointer block text-center m-auto max-w-100 rounded-4xl border border-gray-700 p-6 hover:bg-blue-800 transition-all"
-                href={`/edit-module/${data.id}`}>
+                href={`/edit-module/${localData?.id}`}>
                 Добавить или удалить термины
               </Link>
             </>
